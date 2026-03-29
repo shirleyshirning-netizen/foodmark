@@ -7,7 +7,57 @@ const API_KEY =
   process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY ||
   ''
 
+const SCRAPINGBEE_KEY = process.env.SCRAPINGBEE_API_KEY || ''
+
 const GOOGLE_MAPS_PATTERN = /https:\/\/(www\.)?google\.[a-z.]+\/maps\//i
+
+// ─── ScrapingBee: follow redirect and return final URL ───────────────────────
+async function tryScrapingBee(url: string): Promise<string | null> {
+  if (!SCRAPINGBEE_KEY) {
+    console.log('[share-google] ScrapingBee key not set, skipping')
+    return null
+  }
+  try {
+    const params = new URLSearchParams({
+      api_key: SCRAPINGBEE_KEY,
+      url,
+      render_js: 'false',   // no JS rendering needed, just follow redirects
+      premium_proxy: 'true', // bypass Google bot detection
+      return_page_content: 'true',
+    })
+    const endpoint = `https://app.scrapingbee.com/api/v1/?${params}`
+    console.log(`[share-google] ScrapingBee → ${url}`)
+    const res = await fetch(endpoint, { method: 'GET' })
+    // ScrapingBee returns the final URL in this header
+    const resolvedUrl = res.headers.get('Spb-Resolved-Url') || ''
+    console.log(`[share-google] ScrapingBee resolved URL: ${resolvedUrl || '(none)'}`)
+
+    if (resolvedUrl && (resolvedUrl.includes('/sorry') || GOOGLE_MAPS_PATTERN.test(resolvedUrl))) {
+      return resolvedUrl
+    }
+
+    // Fallback: scan the response body for a Maps URL or /sorry
+    const body = await res.text()
+    const mapMatch = body.match(/https:\/\/(?:www\.)?google\.[a-z.]+\/maps\/[^\s"'<>]+/i)
+    if (mapMatch) {
+      console.log(`[share-google] ScrapingBee found Maps URL in body: ${mapMatch[0]}`)
+      return mapMatch[0]
+    }
+
+    // Extract /sorry URL from body if present
+    const sorryMatch = body.match(/https:\/\/www\.google\.com\/sorry[^\s"'<>]+/i)
+    if (sorryMatch) {
+      console.log(`[share-google] ScrapingBee found /sorry URL in body: ${sorryMatch[0]}`)
+      return sorryMatch[0]
+    }
+
+    console.log(`[share-google] ScrapingBee: no useful URL found`)
+    return null
+  } catch (e) {
+    console.log(`[share-google] ScrapingBee error: ${e}`)
+    return null
+  }
+}
 
 // ─── Parse the decoded `continue` URL for name, kgmid, coords ────────────────
 interface ContinueInfo {
@@ -149,11 +199,16 @@ export async function POST(req: NextRequest) {
 
   console.log(`\n[share-google] ══ Input: ${url}`)
 
-  // ── Step 1: Follow redirect (simple fetch → Puppeteer fallback) ─────────────
+  // ── Step 1: Follow redirect (simple fetch → ScrapingBee → Puppeteer) ────────
   let finalUrl = await trySimpleFetch(url)
 
   if (!finalUrl || (!finalUrl.includes('/sorry') && !GOOGLE_MAPS_PATTERN.test(finalUrl))) {
-    console.log('[share-google] Simple fetch did not land on /sorry or Maps — trying Puppeteer…')
+    console.log('[share-google] Simple fetch did not land on /sorry or Maps — trying ScrapingBee…')
+    finalUrl = await tryScrapingBee(url)
+  }
+
+  if (!finalUrl || (!finalUrl.includes('/sorry') && !GOOGLE_MAPS_PATTERN.test(finalUrl))) {
+    console.log('[share-google] ScrapingBee did not resolve — trying Puppeteer…')
     finalUrl = await tryWithPuppeteer(url)
   }
 
