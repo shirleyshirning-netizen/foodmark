@@ -10,6 +10,7 @@ const API_KEY =
 const SCRAPINGBEE_KEY = process.env.SCRAPINGBEE_API_KEY || ''
 
 const GOOGLE_MAPS_PATTERN = /https:\/\/(www\.)?google\.[a-z.]+\/maps\//i
+const GOOGLE_SEARCH_PATTERN = /https:\/\/(?:www\.)?google\.[a-z.]+\/search\?/i
 
 // ─── ScrapingBee: follow redirect and return final URL ───────────────────────
 async function tryScrapingBee(url: string): Promise<string | null> {
@@ -201,6 +202,52 @@ export async function POST(req: NextRequest) {
 
   // ── Step 1: Follow redirect (simple fetch → ScrapingBee → Puppeteer) ────────
   let finalUrl = await trySimpleFetch(url)
+
+  // ── Step 1b: If simple fetch returned a Google Search URL, extract name directly ──
+  if (finalUrl && GOOGLE_SEARCH_PATTERN.test(finalUrl)) {
+    console.log(`[share-google] Simple fetch landed on Google Search URL — extracting directly`)
+    try {
+      const searchUrl = new URL(finalUrl)
+      const q = searchUrl.searchParams.get('q')
+      const kgmid = searchUrl.searchParams.get('kgmid')
+      if (q) {
+        const name = decodeURIComponent(q.replace(/\+/g, ' '))
+        console.log(`[share-google] Extracted from Search URL → name="${name}" kgmid="${kgmid}"`)
+        const searchResult = await placesTextSearch(name)
+        if (searchResult?._apiError) {
+          return NextResponse.json({ error: `Google Places API error: ${searchResult._apiError}` }, { status: 502 })
+        }
+        if (!searchResult) {
+          return NextResponse.json({ error: `No results found for "${name}"` }, { status: 404 })
+        }
+        let placeData = searchResult
+        if (searchResult.place_id) {
+          const details = await placesDetails(searchResult.place_id)
+          if (details) placeData = details
+        }
+        const address = placeData.formatted_address || placeData.vicinity || ''
+        const lat2 = placeData.geometry?.location?.lat
+        const lng2 = placeData.geometry?.location?.lng
+        const photoUrl = placeData.photos?.length > 0 ? buildPhotoUrl(placeData.photos[0].photo_reference) : undefined
+        const placeId = placeData.place_id
+        const { state, city } = detectStateAndCity(address)
+        const openingHours = placeData.opening_hours
+          ? { open_now: placeData.opening_hours.open_now, weekday_text: placeData.opening_hours.weekday_text || [] }
+          : undefined
+        console.log(`[share-google] ✓ Done (via Search URL): "${placeData.name}" | ${state}, ${city}`)
+        return NextResponse.json({
+          name: placeData.name, address, rating: placeData.rating || 0,
+          totalRatings: placeData.user_ratings_total || 0, photoUrl, placeId, state, city,
+          lat: lat2, lng: lng2,
+          googleMapsUrl: `https://www.google.com/maps/place/?q=place_id:${placeId}`,
+          wazeUrl: lat2 && lng2 ? `https://waze.com/ul?ll=${lat2},${lng2}&navigate=yes` : `https://waze.com/ul?q=${encodeURIComponent(placeData.name)}`,
+          types: placeData.types || [], openingHours, phone: placeData.formatted_phone_number || undefined,
+        })
+      }
+    } catch (e) {
+      console.log(`[share-google] Failed to extract from Search URL: ${e}`)
+    }
+  }
 
   if (!finalUrl || (!finalUrl.includes('/sorry') && !GOOGLE_MAPS_PATTERN.test(finalUrl))) {
     console.log('[share-google] Simple fetch did not land on /sorry or Maps — trying ScrapingBee…')
