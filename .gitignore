@@ -1,0 +1,19 @@
+# dependencies
+/node_modules
+
+# Next.js
+/.next/
+/out/
+
+# environment variables (DO NOT COMMIT)
+.env
+.env.local
+.env*.local
+
+# debug logs
+npm-debug.log*
+
+# misc
+.DS_Store
+*.pem
+/coverage

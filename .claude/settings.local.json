@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Figma__get_metadata",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); JSON.parse\\(fs.readFileSync\\(''C:/Users/niang/.claude/settings.json'',''utf8''\\)\\); console.log\\(''JSON valid ✓''\\);\")",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(taskkill /PID 20536 /F)",
+      "Bash(cmd /c \"taskkill /PID 20536 /F\")",
+      "Bash(cmd /c \"FOR /F \"\"tokens=5\"\" %a IN \\(''netstat -aon ^| findstr :3000 ^| findstr LISTENING''\\) DO taskkill /F /PID %a\")",
+      "Bash(cmd /c \"FOR /F \"\"tokens=5\"\" %a IN \\(''netstat -aon ^| findstr :3001 ^| findstr LISTENING''\\) DO taskkill /F /PID %a\")",
+      "Bash(powershell -Command \"Stop-Process -Id 20536 -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 2; Get-Process -Id 20536 -ErrorAction SilentlyContinue\")",
+      "Bash(npx tsc:*)",
+      "Bash(npx next:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(cmd /c \"taskkill /F /IM node.exe\")",
+      "Bash(cmd /c \"taskkill /PID 14700 /F\")"
+    ]
+  }
+}

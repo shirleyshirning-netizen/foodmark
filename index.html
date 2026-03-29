@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wanderlust – Discover Your Next Adventure</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #0a6ebd;
+      --primary-dark: #054f8a;
+      --accent: #f5a623;
+      --text: #1a1a2e;
+      --text-light: #6b7280;
+      --bg: #f9fafb;
+      --white: #ffffff;
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.10);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 6vw;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 12px rgba(0,0,0,0.08);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--accent); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 32px;
+    }
+    nav ul a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    nav ul a:hover { color: var(--primary); }
+
+    .nav-cta {
+      background: var(--primary);
+      color: var(--white) !important;
+      padding: 10px 22px;
+      border-radius: 8px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--primary-dark) !important; color: var(--white) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background:
+        linear-gradient(to bottom, rgba(10,20,40,0.55) 0%, rgba(10,20,40,0.35) 60%, rgba(10,20,40,0.7) 100%),
+        url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1800&q=80') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 6vw 80px;
+      color: var(--white);
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(245,166,35,0.25);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      max-width: 800px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      max-width: 560px;
+      opacity: 0.88;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    /* Search bar */
+    .search-bar {
+      display: flex;
+      background: var(--white);
+      border-radius: 100px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 18px 24px;
+      font-size: 1rem;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .search-bar button {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      padding: 0 32px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 100px;
+      margin: 6px;
+      transition: background 0.2s;
+    }
+    .search-bar button:hover { background: var(--primary-dark); }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 56px;
+    }
+    .stat { text-align: center; }
+    .stat strong { display: block; font-size: 1.8rem; font-weight: 900; }
+    .stat span { font-size: 0.85rem; opacity: 0.75; }
+
+    /* ── SECTIONS ── */
+    section { padding: 80px 6vw; }
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .section-subtitle {
+      color: var(--text-light);
+      font-size: 1rem;
+      max-width: 500px;
+      line-height: 1.6;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .view-all {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .view-all:hover { text-decoration: underline; }
+
+    /* ── DESTINATIONS ── */
+    .destinations { background: var(--white); }
+
+    .dest-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .dest-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .dest-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.16); }
+
+    .dest-card img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s;
+    }
+    .dest-card:hover img { transform: scale(1.05); }
+
+    .dest-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10,20,40,0.80) 0%, transparent 55%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
+      color: var(--white);
+    }
+
+    .dest-overlay h3 { font-size: 1.15rem; font-weight: 800; }
+    .dest-overlay p  { font-size: 0.82rem; opacity: 0.8; margin-top: 2px; }
+
+    .dest-badge {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: var(--accent);
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+
+    /* ── CATEGORIES ── */
+    .categories { background: var(--bg); }
+
+    .cat-grid {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .cat-grid::-webkit-scrollbar { display: none; }
+
+    .cat-card {
+      flex: 0 0 150px;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.25s;
+      border: 2px solid transparent;
+    }
+    .cat-card:hover, .cat-card.active {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+    }
+    .cat-icon { font-size: 2rem; margin-bottom: 10px; }
+    .cat-card h4 { font-size: 0.88rem; font-weight: 700; }
+
+    /* ── FEATURED TRIPS ── */
+    .trips { background: var(--white); }
+
+    .trips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .trip-card {
+      border-radius: var(--radius);
+      background: var(--bg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .trip-card:hover { transform: translateY(-5px); box-shadow: 0 12px 36px rgba(0,0,0,0.13); }
+
+    .trip-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .trip-body { padding: 20px; }
+    .trip-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .trip-tag {
+      background: #e8f0fe;
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+    .trip-rating { font-size: 0.82rem; color: var(--accent); font-weight: 700; }
+    .trip-body h3 { font-size: 1rem; font-weight: 800; margin-bottom: 6px; }
+    .trip-body p { font-size: 0.85rem; color: var(--text-light); line-height: 1.5; }
+
+    .trip-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .trip-info { font-size: 0.8rem; color: var(--text-light); }
+    .trip-price strong { font-size: 1.1rem; font-weight: 900; color: var(--primary); }
+    .trip-price span { font-size: 0.75rem; color: var(--text-light); }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials { background: linear-gradient(135deg, #0a6ebd 0%, #054f8a 100%); color: var(--white); }
+    .testimonials .section-label { color: var(--accent); }
+    .testimonials .section-title { color: var(--white); }
+    .testimonials .section-subtitle { color: rgba(255,255,255,0.75); }
+
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .testi-card {
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .testi-stars { color: var(--accent); font-size: 1rem; margin-bottom: 14px; }
+    .testi-card p { font-size: 0.92rem; line-height: 1.7; opacity: 0.9; margin-bottom: 20px; }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-author img {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.4);
+    }
+    .testi-author strong { display: block; font-size: 0.9rem; }
+    .testi-author span { font-size: 0.78rem; opacity: 0.7; }
+
+    /* ── NEWSLETTER ── */
+    .newsletter {
+      background: var(--bg);
+      text-align: center;
+    }
+    .newsletter-inner {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 60px 40px;
+      max-width: 640px;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+    }
+    .newsletter h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+    .newsletter p { color: var(--text-light); margin-bottom: 28px; font-size: 0.95rem; }
+    .newsletter-form {
+      display: flex;
+      gap: 10px;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+    .newsletter-form input {
+      flex: 1;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .newsletter-form input:focus { border-color: var(--primary); }
+    .newsletter-form button {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      padding: 13px 24px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .newsletter-form button:hover { background: var(--primary-dark); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text);
+      color: rgba(255,255,255,0.7);
+      padding: 60px 6vw 32px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand .logo { color: var(--white); display: block; margin-bottom: 14px; }
+    .footer-brand p { font-size: 0.88rem; line-height: 1.7; }
+    .footer-col h4 { color: var(--white); font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.87rem; transition: color 0.2s; }
+    .footer-col ul a:hover { color: var(--white); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .social-links { display: flex; gap: 14px; }
+    .social-links a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: color 0.2s;
+    }
+    .social-links a:hover { color: var(--accent); }
+
+    @media (max-width: 768px) {
+      nav ul { display: none; }
+      .hero-stats { gap: 24px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .newsletter-form { flex-direction: column; }
+    }
+
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo">Wander<span>lust</span></div>
+    <ul>
+      <li><a href="#destinations">Destinations</a></li>
+      <li><a href="#trips">Trips</a></li>
+      <li><a href="#categories">Experiences</a></li>
+      <li><a href="#" class="nav-cta">Book Now</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">✈ Explore the World</div>
+    <h1>Find Your Perfect <em>Adventure</em> Awaits</h1>
+    <p>Discover breathtaking destinations, handcrafted itineraries, and unforgettable experiences tailored just for you.</p>
+    <div class="search-bar">
+      <input type="text" placeholder="Where do you want to go?" />
+      <button>Search</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong>500+</strong><span>Destinations</span></div>
+      <div class="stat"><strong>12K+</strong><span>Happy Travelers</span></div>
+      <div class="stat"><strong>98%</strong><span>Satisfaction</span></div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="categories" id="categories">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Browse by Type</div>
+        <div class="section-title">What Kind of Trip?</div>
+      </div>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card active"><div class="cat-icon">🏖️</div><h4>Beach</h4></div>
+      <div class="cat-card"><div class="cat-icon">🏔️</div><h4>Mountain</h4></div>
+      <div class="cat-card"><div class="cat-icon">🏙️</div><h4>City Break</h4></div>
+      <div class="cat-card"><div class="cat-icon">🌿</div><h4>Nature</h4></div>
+      <div class="cat-card"><div class="cat-icon">🛕</div><h4>Culture</h4></div>
+      <div class="cat-card"><div class="cat-icon">🍜</div><h4>Food Tour</h4></div>
+      <div class="cat-card"><div class="cat-icon">🚢</div><h4>Cruise</h4></div>
+      <div class="cat-card"><div class="cat-icon">🧗</div><h4>Adventure</h4></div>
+    </div>
+  </section>
+
+  <!-- DESTINATIONS -->
+  <section class="destinations" id="destinations">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Top Picks</div>
+        <div class="section-title">Popular Destinations</div>
+        <p class="section-subtitle">Explore our most-loved destinations chosen by thousands of travelers.</p>
+      </div>
+      <a href="#" class="view-all">View All →</a>
+    </div>
+    <div class="dest-grid">
+      <div class="dest-card">
+        <img src="https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600&q=80" alt="Santorini" />
+        <div class="dest-overlay">
+          <h3>Santorini, Greece</h3>
+          <p>From $1,299 / person</p>
+        </div>
+        <div class="dest-badge">Trending</div>
+      </div>
+      <div class="dest-card">
+        <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80" alt="Kyoto" />
+        <div class="dest-overlay">
+          <h3>Kyoto, Japan</h3>
+          <p>From $1,850 / person</p>
+        </div>
+      </div>
+      <div class="dest-card">
+        <img src="https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=600&q=80" alt="Rio de Janeiro" />
+        <div class="dest-overlay">
+          <h3>Rio de Janeiro, Brazil</h3>
+          <p>From $999 / person</p>
+        </div>
+        <div class="dest-badge">Hot Deal</div>
+      </div>
+      <div class="dest-card">
+        <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?w=600&q=80" alt="Bali" />
+        <div class="dest-overlay">
+          <h3>Bali, Indonesia</h3>
+          <p>From $849 / person</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED TRIPS -->
+  <section class="trips" id="trips">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Curated Packages</div>
+        <div class="section-title">Featured Trips</div>
+        <p class="section-subtitle">All-inclusive itineraries crafted by our expert travel designers.</p>
+      </div>
+      <a href="#" class="view-all">View All →</a>
+    </div>
+    <div class="trips-grid">
+      <div class="trip-card">
+        <img src="https://images.unsplash.com/photo-1523978591478-c753949ff840?w=600&q=80" alt="Northern Lights" />
+        <div class="trip-body">
+          <div class="trip-meta">
+            <span class="trip-tag">Arctic</span>
+            <span class="trip-rating">★ 4.9</span>
+          </div>
+          <h3>Northern Lights, Iceland</h3>
+          <p>Chase the aurora borealis across Iceland's dramatic volcanic landscapes and geothermal pools.</p>
+          <div class="trip-footer">
+            <div class="trip-info">📅 7 Days &nbsp; 👥 Max 12</div>
+            <div class="trip-price"><strong>$2,499</strong><span> /person</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="trip-card">
+        <img src="https://images.unsplash.com/photo-1526392060635-9d6019884377?w=600&q=80" alt="Machu Picchu" />
+        <div class="trip-body">
+          <div class="trip-meta">
+            <span class="trip-tag">Heritage</span>
+            <span class="trip-rating">★ 4.8</span>
+          </div>
+          <h3>Machu Picchu, Peru</h3>
+          <p>Trek the ancient Inca Trail through cloud forests to the iconic lost city of the Incas.</p>
+          <div class="trip-footer">
+            <div class="trip-info">📅 10 Days &nbsp; 👥 Max 8</div>
+            <div class="trip-price"><strong>$3,199</strong><span> /person</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="trip-card">
+        <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&q=80" alt="Safari Kenya" />
+        <div class="trip-body">
+          <div class="trip-meta">
+            <span class="trip-tag">Safari</span>
+            <span class="trip-rating">★ 5.0</span>
+          </div>
+          <h3>Safari Adventure, Kenya</h3>
+          <p>Witness the Great Migration and encounter the Big Five across the Masai Mara savannah.</p>
+          <div class="trip-footer">
+            <div class="trip-info">📅 8 Days &nbsp; 👥 Max 6</div>
+            <div class="trip-price"><strong>$4,599</strong><span> /person</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials">
+    <div class="section-label">What People Say</div>
+    <div class="section-title">Loved by Travelers</div>
+    <p class="section-subtitle">Real stories from real adventurers who explored the world with us.</p>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p>"Wanderlust made our honeymoon in Santorini absolutely magical. Every detail was handled perfectly — from the cliffside villa to the private boat tour."</p>
+        <div class="testi-author">
+          <img src="https://i.pravatar.cc/80?img=47" alt="Sofia" />
+          <div><strong>Sofia M.</strong><span>Santorini Trip, 2025</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p>"The Kenya Safari exceeded all expectations. Seeing a lion pride at sunrise while sipping coffee in the bush... I'll never forget that. Worth every penny."</p>
+        <div class="testi-author">
+          <img src="https://i.pravatar.cc/80?img=12" alt="James" />
+          <div><strong>James O.</strong><span>Kenya Safari, 2025</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p>"As a solo traveler, I was nervous. But the group trip to Iceland was so well organized and the community was amazing. Already booked my next adventure!"</p>
+        <div class="testi-author">
+          <img src="https://i.pravatar.cc/80?img=32" alt="Yuki" />
+          <div><strong>Yuki T.</strong><span>Iceland Trip, 2026</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <div class="newsletter-inner">
+      <div class="section-label" style="text-align:center">Stay Inspired</div>
+      <h2>Get Travel Deals First</h2>
+      <p>Join 50,000+ travelers who receive our weekly destination guides and exclusive early-bird offers.</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="Your email address" />
+        <button>Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo">Wander<span style="color:var(--accent)">lust</span></span>
+        <p>We believe travel transforms lives. Our mission is to make extraordinary journeys accessible to every curious soul.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#">Destinations</a></li>
+          <li><a href="#">Featured Trips</a></li>
+          <li><a href="#">Last Minute</a></li>
+          <li><a href="#">Group Travel</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Wanderlust. All rights reserved.</span>
+      <div class="social-links">
+        <a href="#" title="Instagram">📸</a>
+        <a href="#" title="Twitter">🐦</a>
+        <a href="#" title="Facebook">👤</a>
+        <a href="#" title="YouTube">▶️</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Category card toggle
+    document.querySelectorAll('.cat-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+      });
+    });
+
+    // Smooth nav highlight on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('nav ul a[href^="#"]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 100) current = s.id;
+      });
+      navLinks.forEach(a => {
+        a.style.color = a.getAttribute('href') === '#' + current ? 'var(--primary)' : '';
+      });
+    });
+  </script>
+</body>
+</html>
