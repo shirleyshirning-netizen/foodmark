@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
-import { GA_MEASUREMENT_ID } from '@/lib/analytics'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -18,21 +17,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="ga-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}', { page_path: window.location.pathname });
-          `}
-        </Script>
-      </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>{children}</body>
+      <GoogleAnalytics gaId="G-DWR0ZMERMS" />
     </html>
   )
 }

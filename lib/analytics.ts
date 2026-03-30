@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-export const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX'
+export const GA_MEASUREMENT_ID = 'G-DWR0ZMERMS'
 
 export function trackEvent(
   eventName: string,
