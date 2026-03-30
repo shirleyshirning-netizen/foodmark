@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Restaurant } from '@/types/restaurant'
+import { trackEvent } from '@/lib/analytics'
 
 interface AddRestaurantFormProps {
   onAdd: (restaurant: Restaurant) => void
@@ -77,6 +78,7 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
       onAdd(restaurant)
       setUrl('')
       inputRef.current?.blur()
+      trackEvent('add_restaurant', { restaurant_name: restaurant.name, state: restaurant.state || 'unknown' })
     } catch {
       setError('Network error. Please try again.')
       inputRef.current?.blur()

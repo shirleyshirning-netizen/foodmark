@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Restaurant } from '@/types/restaurant'
 import StarRating from './StarRating'
+import { trackEvent } from '@/lib/analytics'
 
 interface RestaurantCardProps {
   restaurant: Restaurant
@@ -89,7 +90,7 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
 
           {/* Heart — top-right of photo */}
           <button
-            onClick={() => onFavouriteToggle(restaurant.id)}
+            onClick={() => { onFavouriteToggle(restaurant.id); trackEvent('favourite', { restaurant_name: restaurant.name, action: restaurant.isFavourite ? 'unfavourite' : 'favourite' }) }}
             className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
               restaurant.isFavourite ? 'bg-white shadow-lg scale-110' : 'bg-black/30 hover:bg-black/50'
             }`}
@@ -175,10 +176,12 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
           {/* Navigation */}
           <div className="flex gap-2 mt-auto">
             <a href={restaurant.googleMapsUrl} target="_blank" rel="noopener noreferrer"
+              onClick={() => trackEvent('click_google_maps', { restaurant_name: restaurant.name })}
               className="flex-1 bg-[#111111] hover:bg-[#333333] text-white text-sm font-black py-3 px-3 rounded-2xl text-center transition-colors">
               Google Maps
             </a>
             <a href={restaurant.wazeUrl} target="_blank" rel="noopener noreferrer"
+              onClick={() => trackEvent('click_waze', { restaurant_name: restaurant.name })}
               className="flex-1 bg-[#007AFF] hover:bg-[#0062cc] text-white text-sm font-black py-3 px-3 rounded-2xl text-center transition-colors">
               Waze
             </a>
