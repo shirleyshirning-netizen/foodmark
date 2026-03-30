@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Restaurant } from '@/types/restaurant'
 
 interface AddRestaurantFormProps {
@@ -22,6 +22,7 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
   const [step, setStep] = useState<Step>('idle')
   const [error, setError] = useState('')
   const [debugLog, setDebugLog] = useState<string[]>([])
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const loading = step !== 'idle'
 
@@ -47,6 +48,7 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
         data = await resolveRes.json()
         if (!resolveRes.ok) {
           setError(data.error || 'Could not resolve the share.google link.')
+          inputRef.current?.blur()
           return
         }
       } else {
@@ -60,6 +62,7 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
         data = await res.json()
         if (!res.ok) {
           setError(data.error || 'Failed to fetch restaurant data')
+          inputRef.current?.blur()
           return
         }
       }
@@ -73,8 +76,10 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
 
       onAdd(restaurant)
       setUrl('')
+      inputRef.current?.blur()
     } catch {
       setError('Network error. Please try again.')
+      inputRef.current?.blur()
     } finally {
       setStep('idle')
     }
@@ -95,11 +100,13 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex gap-3">
           <input
+            ref={inputRef}
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Paste Google Maps link here..."
-            className="flex-1 bg-white border-2 border-[#111111] rounded-2xl px-4 py-4 text-sm font-semibold text-[#111111] placeholder-gray-400 outline-none focus:border-[#FF6B35] transition-colors"
+            className="flex-1 bg-white border-2 border-[#111111] rounded-2xl px-4 py-4 font-semibold text-[#111111] placeholder-gray-400 outline-none focus:border-[#FF6B35] transition-colors"
+            style={{ fontSize: '16px' }}
           />
           <button
             type="submit"
