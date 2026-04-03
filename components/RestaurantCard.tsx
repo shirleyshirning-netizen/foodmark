@@ -23,7 +23,6 @@ function getCardColor(name: string): string {
   return CARD_COLORS[Math.abs(hash) % CARD_COLORS.length]
 }
 
-/* ── Icons ── */
 function HeartFilled() {
   return (
     <svg viewBox="0 0 24 24" className="w-4 h-4 fill-red-500">
@@ -63,7 +62,6 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
   const cardColor = getCardColor(restaurant.name)
   const hasWeeklyHours = (restaurant.openingHours?.weekday_text?.length ?? 0) > 0
 
-  // Opening hours — parse into two-column rows (24h format)
   const DAY_ABBR: Record<string, string> = {
     Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed',
     Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat', Sunday: 'Sun',
@@ -81,10 +79,10 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
   })
 
   return (
-    <div className="rounded-2xl bg-white flex flex-col h-full shadow-[0_2px_12px_rgba(0,0,0,0.10)] overflow-hidden">
+    <div className="rounded-2xl bg-white flex flex-col shadow-md overflow-hidden mb-2">
 
-      {/* ── Photo with overlaid name ── */}
-      <div className={`relative h-[160px] sm:h-[200px] ${!restaurant.photoUrl ? cardColor : ''} flex-shrink-0`}>
+      {/* ── Photo ── */}
+      <div className={`relative h-[200px] shrink-0 ${!restaurant.photoUrl ? cardColor : ''}`}>
         {restaurant.photoUrl ? (
           <Image src={restaurant.photoUrl} alt={restaurant.name} fill className="object-cover" unoptimized />
         ) : (
@@ -94,14 +92,7 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
         )}
 
         {/* Gradient overlay */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-
-        {/* Restaurant name on photo */}
-        <div className="absolute bottom-0 left-0 right-8 p-3">
-          <h3 className="font-bold text-white text-sm leading-tight line-clamp-2 drop-shadow-sm">
-            {restaurant.name}
-          </h3>
-        </div>
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
 
         {/* Trash — top-left */}
         <button
@@ -127,18 +118,25 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
         </button>
       </div>
 
-      {/* ── Info section ── */}
-      <div className="p-2.5 flex flex-col gap-1.5 flex-1">
+      {/* ── Info ── */}
+      <div className="p-4 flex flex-col gap-1.5">
 
-        {/* Rating (row 1) + Open/Closed (row 2) */}
-        <div className="flex flex-col gap-1">
-          {restaurant.rating > 0 && (
-            <StarRating rating={restaurant.rating} totalRatings={restaurant.totalRatings} size="sm" />
-          )}
+        {/* Name */}
+        <h3 className="font-bold text-[#111111] text-base leading-tight line-clamp-2">
+          {restaurant.name}
+        </h3>
+
+        {/* Rating + Open/Closed */}
+        <div className="flex items-center justify-between">
+          <div className="flex-1 min-w-0">
+            {restaurant.rating > 0 && (
+              <StarRating rating={restaurant.rating} totalRatings={restaurant.totalRatings} size="sm" />
+            )}
+          </div>
           {restaurant.openingHours && (
             <button
-              onClick={() => setHoursExpanded(x => !x)}
-              className="flex items-center gap-1 w-fit"
+              onClick={() => hasWeeklyHours && setHoursExpanded(x => !x)}
+              className="flex items-center gap-1 shrink-0 ml-2"
             >
               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${restaurant.openingHours.open_now ? 'bg-green-500' : 'bg-red-500'}`} />
               <span className={`text-xs font-bold ${restaurant.openingHours.open_now ? 'text-green-600' : 'text-red-500'}`}>
@@ -154,7 +152,7 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
         {/* Hours expandable */}
         {hasWeeklyHours && (
           <div className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${hoursExpanded ? 'max-h-48' : 'max-h-0'}`}>
-            <ul className="pl-0">
+            <ul className="pt-0.5">
               {parsedHours.map(({ abbr, time }, i) => (
                 <li key={i} className="flex items-baseline gap-2 text-xs leading-5 font-semibold text-gray-500">
                   <span className="w-8 shrink-0">{abbr}</span>
@@ -176,9 +174,9 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
           </a>
         )}
 
-        {/* Address — hidden by default, expandable */}
-        <div className="flex-1">
-          <div className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${addressExpanded ? 'max-h-48' : 'max-h-0'}`}>
+        {/* Address expandable */}
+        <div>
+          <div className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${addressExpanded ? 'max-h-24' : 'max-h-0'}`}>
             <p className="text-gray-500 text-xs leading-snug mb-1">
               📍 {restaurant.address}
             </p>
@@ -192,13 +190,13 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
         </div>
 
         {/* Navigation buttons */}
-        <div className="flex gap-1.5 mt-auto">
+        <div className="flex gap-2 mt-1">
           <a
             href={restaurant.googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackEvent('click_google_maps', { restaurant_name: restaurant.name })}
-            className="flex-1 bg-[#111111] hover:bg-[#333333] text-white text-xs font-bold py-1.5 px-2 rounded-xl text-center transition-colors"
+            className="flex-1 bg-[#111111] hover:bg-[#333333] text-white text-base font-bold py-3 rounded-xl text-center transition-colors"
           >
             Maps
           </a>
@@ -207,7 +205,7 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackEvent('click_waze', { restaurant_name: restaurant.name })}
-            className="flex-1 bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-bold py-1.5 px-2 rounded-xl text-center transition-colors"
+            className="flex-1 bg-[#007AFF] hover:bg-[#0062cc] text-white text-base font-bold py-3 rounded-xl text-center transition-colors"
           >
             Waze
           </a>

@@ -161,11 +161,8 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
   }
 
   return (
-    <div className="py-2">
-      <h2 className="font-black text-[#111111] text-xl mb-5 tracking-tight">
-        Add Restaurant
-      </h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <div className="py-1">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="relative" ref={containerRef}>
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
             <input
@@ -194,7 +191,7 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
                   <circle className="opacity-30" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                   <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                 </svg>
-              ) : '+ Add'}
+              ) : '+ Add Restaurant'}
             </button>
           </div>
 
@@ -241,9 +238,6 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
           </div>
         )}
 
-        <p className="text-gray-400 text-xs font-semibold">
-          Supports: Google Maps links, share.google links, maps.app.goo.gl short links
-        </p>
       </form>
     </div>
   )

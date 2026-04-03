@@ -57,27 +57,27 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#FFFBF0]">
 
       {/* ── Header ── */}
-      <header className="bg-[#111111] px-4 pt-8 pb-7">
+      <header className="bg-[#111111] px-3 py-3">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between">
-            <img src="/logo.png" alt="Foodmark" className="h-20 w-auto object-contain" />
+            <img src="/logo.png" alt="Foodmark" className="h-12 w-auto object-contain" />
 
             {/* Stats badges */}
-            <div className="flex gap-3">
-              <div className="bg-[#FFD60A] rounded-3xl px-4 py-2 text-center min-w-[64px]">
-                <p className="text-[#111111] font-black text-3xl leading-none">{stats.total}</p>
-                <p className="text-[#111111]/60 text-xs font-black uppercase tracking-wider mt-1">Total</p>
+            <div className="flex gap-2">
+              <div className="bg-[#FFD60A] rounded-2xl px-3 py-1.5 text-center min-w-[52px]">
+                <p className="text-[#111111] font-black text-xl leading-none">{stats.total}</p>
+                <p className="text-[#111111]/60 text-[10px] font-black uppercase tracking-wider mt-0.5">Total</p>
               </div>
-              <div className="bg-[#FF3B30] rounded-3xl px-4 py-2 text-center min-w-[64px]">
-                <p className="text-white font-black text-3xl leading-none">{stats.favourites}</p>
-                <p className="text-white/70 text-xs font-black uppercase tracking-wider mt-1">❤ Fav</p>
+              <div className="bg-[#FF3B30] rounded-2xl px-3 py-1.5 text-center min-w-[52px]">
+                <p className="text-white font-black text-xl leading-none">{stats.favourites}</p>
+                <p className="text-white/70 text-[10px] font-black uppercase tracking-wider mt-0.5">❤ Fav</p>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-6 flex flex-col gap-6">
+      <main className="max-w-2xl mx-auto px-2 py-3 flex flex-col gap-3">
 
         {/* Add form */}
         <AddRestaurantForm onAdd={handleAdd} />
@@ -119,7 +119,7 @@ export default function HomePage() {
 
         {/* Restaurant grid */}
         {filtered.length > 0 && (
-          <div className="grid grid-cols-2 gap-3 sm:gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {filtered.map((restaurant) => (
               <RestaurantCard
                 key={restaurant.id}
