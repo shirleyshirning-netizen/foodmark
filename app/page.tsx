@@ -119,7 +119,7 @@ export default function HomePage() {
 
         {/* Restaurant grid */}
         {filtered.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6">
             {filtered.map((restaurant) => (
               <RestaurantCard
                 key={restaurant.id}

@@ -77,8 +77,7 @@ function buildPhotoUrl(photoRef: string): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { url } = await req.json()
-    if (!url) return NextResponse.json({ error: 'URL required' }, { status: 400 })
+    const { url, placeId: directPlaceId } = await req.json()
 
     // Guard: API key missing
     if (!API_KEY) {
@@ -88,6 +87,38 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Direct place_id path — from autocomplete selection
+    if (directPlaceId) {
+      console.log(`[place] Direct placeId: ${directPlaceId}`)
+      const placeData = await getPlaceDetails(directPlaceId)
+      if (!placeData) {
+        return NextResponse.json({ error: 'Restaurant not found.' }, { status: 404 })
+      }
+      if (placeData._apiError) {
+        return NextResponse.json({ error: `Google Places API error: ${placeData._apiError}` }, { status: 502 })
+      }
+      const address = placeData.formatted_address || placeData.vicinity || ''
+      const { state, city } = detectStateAndCity(address)
+      const lat = placeData.geometry?.location?.lat
+      const lng = placeData.geometry?.location?.lng
+      const photoUrl = placeData.photos?.length > 0 ? buildPhotoUrl(placeData.photos[0].photo_reference) : undefined
+      const placeId = placeData.place_id || directPlaceId
+      const openingHours = placeData.opening_hours
+        ? { open_now: placeData.opening_hours.open_now, weekday_text: placeData.opening_hours.weekday_text || [] }
+        : undefined
+      console.log(`[place] ✓ Success (direct): ${placeData.name}`)
+      return NextResponse.json({
+        name: placeData.name || 'Unknown Restaurant',
+        address, rating: placeData.rating || 0, totalRatings: placeData.user_ratings_total || 0,
+        photoUrl, placeId, state, city, lat, lng,
+        googleMapsUrl: `https://www.google.com/maps/place/?q=place_id:${placeId}`,
+        wazeUrl: lat && lng ? `https://waze.com/ul?ll=${lat},${lng}&navigate=yes` : `https://waze.com/ul?q=${encodeURIComponent(placeData.name || '')}`,
+        types: placeData.types || [], openingHours, phone: placeData.formatted_phone_number || undefined,
+      })
+    }
+
+    if (!url) return NextResponse.json({ error: 'URL required' }, { status: 400 })
     console.log(`[place] API key present: ...${API_KEY.slice(-6)}`)
 
     let resolvedUrl = url
