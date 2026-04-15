@@ -82,7 +82,7 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
     <div className="rounded-2xl bg-white flex flex-col shadow-md overflow-hidden mb-2">
 
       {/* ── Photo ── */}
-      <div className={`relative h-[200px] shrink-0 ${!restaurant.photoUrl ? cardColor : ''}`}>
+      <div className={`relative aspect-[4/3] sm:aspect-auto sm:h-[200px] shrink-0 ${!restaurant.photoUrl ? cardColor : ''}`}>
         {restaurant.photoUrl ? (
           <Image src={restaurant.photoUrl} alt={restaurant.name} fill className="object-cover" unoptimized />
         ) : (
