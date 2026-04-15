@@ -237,7 +237,13 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
         {/* Navigation buttons */}
         <div className="flex gap-2 mt-1">
           <a
-            href={restaurant.googleMapsUrl}
+            href={
+              restaurant.googleMapsUrl?.includes('/search/')
+                ? restaurant.googleMapsUrl
+                : restaurant.lat && restaurant.lng
+                  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restaurant.lat},${restaurant.lng}`)}`
+                  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restaurant.name} ${restaurant.address}`)}`
+            }
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackEvent('click_google_maps', { restaurant_name: restaurant.name })}

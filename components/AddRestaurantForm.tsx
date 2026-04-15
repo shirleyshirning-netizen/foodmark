@@ -165,22 +165,28 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="relative" ref={containerRef}>
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
-            <input
-              ref={inputRef}
-              type="text"
-              value={url}
-              onChange={(e) => {
-                setUrl(e.target.value)
-                setError('')
-              }}
-              onFocus={() => {
-                if (suggestions.length > 0) setShowDropdown(true)
-              }}
-              placeholder="Search restaurant..."
-              className="w-full sm:flex-1 bg-white border-2 border-[#111111] rounded-2xl px-4 py-4 font-semibold text-[#111111] placeholder-gray-400 outline-none focus:border-[#FF6B35] transition-colors"
-              style={{ fontSize: '16px' }}
-              autoComplete="off"
-            />
+            <div className="relative w-full sm:flex-1">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              <input
+                ref={inputRef}
+                type="text"
+                value={url}
+                onChange={(e) => {
+                  setUrl(e.target.value)
+                  setError('')
+                }}
+                onFocus={() => {
+                  if (suggestions.length > 0) setShowDropdown(true)
+                }}
+                placeholder="Search restaurant"
+                className="w-full bg-white border-2 border-[#111111] rounded-2xl pl-10 pr-4 py-4 font-semibold text-[#111111] placeholder-gray-400 outline-none focus:border-[#FF6B35] transition-colors"
+                style={{ fontSize: '16px' }}
+                autoComplete="off"
+              />
+            </div>
             <button
               type="submit"
               disabled={loading || !url.trim() || !isUrlMode}

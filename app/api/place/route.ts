@@ -79,6 +79,13 @@ function buildPhotoUrls(photos: any[]): string[] {
   return photos.slice(0, 5).map((p) => buildPhotoUrl(p.photo_reference))
 }
 
+function buildMapsUrl(lat: number | undefined, lng: number | undefined, name: string, address: string): string {
+  if (lat && lng) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}`
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address}`)}`
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { url, placeId: directPlaceId } = await req.json()
@@ -117,7 +124,7 @@ export async function POST(req: NextRequest) {
         name: placeData.name || 'Unknown Restaurant',
         address, rating: placeData.rating || 0, totalRatings: placeData.user_ratings_total || 0,
         photoUrl, photoUrls, placeId, state, city, lat, lng,
-        googleMapsUrl: `https://www.google.com/maps/place/?q=place_id:${placeId}`,
+        googleMapsUrl: buildMapsUrl(lat, lng, placeData.name || '', address),
         wazeUrl: lat && lng ? `https://waze.com/ul?ll=${lat},${lng}&navigate=yes` : `https://waze.com/ul?q=${encodeURIComponent(placeData.name || '')}`,
         types: placeData.types || [], openingHours, phone: placeData.formatted_phone_number || undefined,
       })
@@ -198,7 +205,7 @@ export async function POST(req: NextRequest) {
     const photoUrl = photoUrls?.[0]
 
     const placeId = placeData.place_id || parsed.value
-    const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`
+    const googleMapsUrl = buildMapsUrl(lat, lng, placeData.name || '', address)
     const wazeUrl =
       lat && lng
         ? `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`

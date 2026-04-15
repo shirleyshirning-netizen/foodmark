@@ -187,6 +187,13 @@ function buildPhotoUrl(ref: string) {
   return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${ref}&key=${API_KEY}`
 }
 
+function buildMapsUrl(lat: number | undefined, lng: number | undefined, name: string, address: string): string {
+  if (lat && lng) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}`
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address}`)}`
+}
+
 // ─── Main handler ─────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   const { url } = await req.json()
@@ -240,7 +247,7 @@ export async function POST(req: NextRequest) {
           name: placeData.name, address, rating: placeData.rating || 0,
           totalRatings: placeData.user_ratings_total || 0, photoUrl, photoUrls, placeId, state, city,
           lat: lat2, lng: lng2,
-          googleMapsUrl: `https://www.google.com/maps/place/?q=place_id:${placeId}`,
+          googleMapsUrl: buildMapsUrl(lat2, lng2, placeData.name || '', address),
           wazeUrl: lat2 && lng2 ? `https://waze.com/ul?ll=${lat2},${lng2}&navigate=yes` : `https://waze.com/ul?q=${encodeURIComponent(placeData.name)}`,
           types: placeData.types || [], openingHours, phone: placeData.formatted_phone_number || undefined,
         })
@@ -354,7 +361,7 @@ export async function POST(req: NextRequest) {
     city,
     lat: lat2,
     lng: lng2,
-    googleMapsUrl: `https://www.google.com/maps/place/?q=place_id:${placeId}`,
+    googleMapsUrl: buildMapsUrl(lat2, lng2, placeData.name || '', address),
     wazeUrl: lat2 && lng2
       ? `https://waze.com/ul?ll=${lat2},${lng2}&navigate=yes`
       : `https://waze.com/ul?q=${encodeURIComponent(placeData.name)}`,
