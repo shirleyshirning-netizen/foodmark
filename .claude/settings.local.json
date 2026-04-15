@@ -27,7 +27,8 @@
       "Bash(powershell -Command \"Stop-Process -Id 21644 -Force\")",
       "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -State Listen | Select-Object -ExpandProperty OwningProcess\")",
       "Skill(push-all)",
-      "Skill(push-all:*)"
+      "Skill(push-all:*)",
+      "mcp__Claude_in_Chrome__read_console_messages"
     ]
   }
 }

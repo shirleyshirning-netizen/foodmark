@@ -75,6 +75,10 @@ function buildPhotoUrl(photoRef: string): string {
   return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${photoRef}&key=${API_KEY}`
 }
 
+function buildPhotoUrls(photos: any[]): string[] {
+  return photos.slice(0, 5).map((p) => buildPhotoUrl(p.photo_reference))
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { url, placeId: directPlaceId } = await req.json()
@@ -102,7 +106,8 @@ export async function POST(req: NextRequest) {
       const { state, city } = detectStateAndCity(address)
       const lat = placeData.geometry?.location?.lat
       const lng = placeData.geometry?.location?.lng
-      const photoUrl = placeData.photos?.length > 0 ? buildPhotoUrl(placeData.photos[0].photo_reference) : undefined
+      const photoUrls = placeData.photos?.length > 0 ? buildPhotoUrls(placeData.photos) : undefined
+      const photoUrl = photoUrls?.[0]
       const placeId = placeData.place_id || directPlaceId
       const openingHours = placeData.opening_hours
         ? { open_now: placeData.opening_hours.open_now, weekday_text: placeData.opening_hours.weekday_text || [] }
@@ -111,7 +116,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         name: placeData.name || 'Unknown Restaurant',
         address, rating: placeData.rating || 0, totalRatings: placeData.user_ratings_total || 0,
-        photoUrl, placeId, state, city, lat, lng,
+        photoUrl, photoUrls, placeId, state, city, lat, lng,
         googleMapsUrl: `https://www.google.com/maps/place/?q=place_id:${placeId}`,
         wazeUrl: lat && lng ? `https://waze.com/ul?ll=${lat},${lng}&navigate=yes` : `https://waze.com/ul?q=${encodeURIComponent(placeData.name || '')}`,
         types: placeData.types || [], openingHours, phone: placeData.formatted_phone_number || undefined,
@@ -186,10 +191,11 @@ export async function POST(req: NextRequest) {
     const lat = placeData.geometry?.location?.lat
     const lng = placeData.geometry?.location?.lng
 
-    const photoUrl =
+    const photoUrls =
       placeData.photos && placeData.photos.length > 0
-        ? buildPhotoUrl(placeData.photos[0].photo_reference)
+        ? buildPhotoUrls(placeData.photos)
         : undefined
+    const photoUrl = photoUrls?.[0]
 
     const placeId = placeData.place_id || parsed.value
     const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`
@@ -213,6 +219,7 @@ export async function POST(req: NextRequest) {
       rating: placeData.rating || 0,
       totalRatings: placeData.user_ratings_total || 0,
       photoUrl,
+      photoUrls,
       placeId,
       state,
       city,

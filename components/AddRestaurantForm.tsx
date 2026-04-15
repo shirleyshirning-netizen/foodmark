@@ -176,7 +176,7 @@ export default function AddRestaurantForm({ onAdd }: AddRestaurantFormProps) {
               onFocus={() => {
                 if (suggestions.length > 0) setShowDropdown(true)
               }}
-              placeholder="Paste link or search restaurant..."
+              placeholder="Search restaurant..."
               className="w-full sm:flex-1 bg-white border-2 border-[#111111] rounded-2xl px-4 py-4 font-semibold text-[#111111] placeholder-gray-400 outline-none focus:border-[#FF6B35] transition-colors"
               style={{ fontSize: '16px' }}
               autoComplete="off"

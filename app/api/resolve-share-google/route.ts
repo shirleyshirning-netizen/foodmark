@@ -228,7 +228,8 @@ export async function POST(req: NextRequest) {
         const address = placeData.formatted_address || placeData.vicinity || ''
         const lat2 = placeData.geometry?.location?.lat
         const lng2 = placeData.geometry?.location?.lng
-        const photoUrl = placeData.photos?.length > 0 ? buildPhotoUrl(placeData.photos[0].photo_reference) : undefined
+        const photoUrls = placeData.photos?.length > 0 ? placeData.photos.slice(0, 5).map((p: any) => buildPhotoUrl(p.photo_reference)) : undefined
+        const photoUrl = photoUrls?.[0]
         const placeId = placeData.place_id
         const { state, city } = detectStateAndCity(address)
         const openingHours = placeData.opening_hours
@@ -237,7 +238,7 @@ export async function POST(req: NextRequest) {
         console.log(`[share-google] ✓ Done (via Search URL): "${placeData.name}" | ${state}, ${city}`)
         return NextResponse.json({
           name: placeData.name, address, rating: placeData.rating || 0,
-          totalRatings: placeData.user_ratings_total || 0, photoUrl, placeId, state, city,
+          totalRatings: placeData.user_ratings_total || 0, photoUrl, photoUrls, placeId, state, city,
           lat: lat2, lng: lng2,
           googleMapsUrl: `https://www.google.com/maps/place/?q=place_id:${placeId}`,
           wazeUrl: lat2 && lng2 ? `https://waze.com/ul?ll=${lat2},${lng2}&navigate=yes` : `https://waze.com/ul?q=${encodeURIComponent(placeData.name)}`,
@@ -325,9 +326,10 @@ export async function POST(req: NextRequest) {
   const address = placeData.formatted_address || placeData.vicinity || ''
   const lat2 = placeData.geometry?.location?.lat
   const lng2 = placeData.geometry?.location?.lng
-  const photoUrl = placeData.photos?.length > 0
-    ? buildPhotoUrl(placeData.photos[0].photo_reference)
+  const photoUrls = placeData.photos?.length > 0
+    ? placeData.photos.slice(0, 5).map((p: any) => buildPhotoUrl(p.photo_reference))
     : undefined
+  const photoUrl = photoUrls?.[0]
   const placeId = placeData.place_id
   const { state, city } = detectStateAndCity(address)
 
@@ -346,6 +348,7 @@ export async function POST(req: NextRequest) {
     rating: placeData.rating || 0,
     totalRatings: placeData.user_ratings_total || 0,
     photoUrl,
+    photoUrls,
     placeId,
     state,
     city,

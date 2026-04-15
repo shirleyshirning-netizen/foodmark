@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
 import { Restaurant } from '@/types/restaurant'
 import StarRating from './StarRating'
@@ -55,11 +55,59 @@ function ChevronDown({ className }: { className?: string }) {
   )
 }
 
+function PhotoCarousel({ photos, name }: { photos: string[], name: string }) {
+  const [current, setCurrent] = useState(0)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const handleScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+    const idx = Math.round(el.scrollLeft / el.clientWidth)
+    setCurrent(idx)
+  }
+
+  return (
+    <div className="relative">
+      {/* Scroll container */}
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex overflow-x-auto snap-x snap-mandatory aspect-[4/3] sm:h-[200px] sm:aspect-auto"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {photos.map((url, i) => (
+          <div key={i} className="relative w-full flex-shrink-0 snap-start">
+            <Image src={url} alt={`${name} photo ${i + 1}`} fill className="object-cover" unoptimized />
+          </div>
+        ))}
+      </div>
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+
+      {/* Dot indicators */}
+      {photos.length > 1 && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 pointer-events-none">
+          {photos.map((_, i) => (
+            <span
+              key={i}
+              className={`block rounded-full transition-all duration-200 ${
+                i === current ? 'w-2 h-2 bg-white' : 'w-1.5 h-1.5 bg-white/50'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete }: RestaurantCardProps) {
   const [addressExpanded, setAddressExpanded] = useState(false)
   const [hoursExpanded, setHoursExpanded] = useState(false)
 
   const cardColor = getCardColor(restaurant.name)
+  const photos = restaurant.photoUrls ?? (restaurant.photoUrl ? [restaurant.photoUrl] : [])
   const hasWeeklyHours = (restaurant.openingHours?.weekday_text?.length ?? 0) > 0
 
   const DAY_ABBR: Record<string, string> = {
@@ -82,34 +130,31 @@ export default function RestaurantCard({ restaurant, onFavouriteToggle, onDelete
     <div className="rounded-2xl bg-white flex flex-col shadow-md overflow-hidden mb-2">
 
       {/* ── Photo ── */}
-      <div className={`relative aspect-[4/3] sm:aspect-auto sm:h-[200px] shrink-0 ${!restaurant.photoUrl ? cardColor : ''}`}>
-        {restaurant.photoUrl ? (
-          <Image src={restaurant.photoUrl} alt={restaurant.name} fill className="object-cover" unoptimized />
+      <div className={`relative shrink-0 ${photos.length === 0 ? `aspect-[4/3] sm:aspect-auto sm:h-[200px] ${cardColor}` : ''}`}>
+        {photos.length > 0 ? (
+          <PhotoCarousel photos={photos} name={restaurant.name} />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-5xl opacity-20">🍽️</span>
           </div>
         )}
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
-
-        {/* Trash — top-left */}
+        {/* Trash — top-left (always on top of carousel) */}
         <button
           onClick={() => onDelete(restaurant.id)}
           title="Remove restaurant"
-          className="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/30 hover:bg-red-500 text-white flex items-center justify-center transition-all duration-200"
+          className="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/30 hover:bg-red-500 text-white flex items-center justify-center transition-all duration-200 z-10"
         >
           <TrashIcon />
         </button>
 
-        {/* Heart — top-right */}
+        {/* Heart — top-right (always on top of carousel) */}
         <button
           onClick={() => {
             onFavouriteToggle(restaurant.id)
             trackEvent('favourite', { restaurant_name: restaurant.name, action: restaurant.isFavourite ? 'unfavourite' : 'favourite' })
           }}
-          className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+          className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 z-10 ${
             restaurant.isFavourite ? 'bg-white shadow-lg scale-110' : 'bg-black/30 hover:bg-black/50'
           }`}
           title={restaurant.isFavourite ? 'Remove from favourites' : 'Add to favourites'}

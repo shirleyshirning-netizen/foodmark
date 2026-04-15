@@ -10,6 +10,7 @@ export interface Restaurant {
   rating: number
   totalRatings: number
   photoUrl?: string
+  photoUrls?: string[]
   placeId: string
   state: string
   city: string

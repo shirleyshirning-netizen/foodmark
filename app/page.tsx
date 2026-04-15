@@ -15,6 +15,7 @@ import FilterBar from '@/components/FilterBar'
 export default function HomePage() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [selectedState, setSelectedState] = useState('all')
+  const [selectedCity, setSelectedCity] = useState('all')
   const [favouriteOnly, setFavouriteOnly] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -40,10 +41,23 @@ export default function HomePage() {
     (s) => s !== 'Malaysia'
   )
 
+  // Cities filtered by selected state
+  const availableCities = [...new Set(
+    restaurants
+      .filter((r) => selectedState === 'all' || r.state === selectedState)
+      .map((r) => r.city)
+  )].filter(Boolean).sort()
+
+  const handleStateChange = (state: string) => {
+    setSelectedState(state)
+    setSelectedCity('all')
+  }
+
   const filtered = restaurants.filter((r) => {
     const stateMatch = selectedState === 'all' || r.state === selectedState
+    const cityMatch = selectedCity === 'all' || r.city === selectedCity
     const favMatch = !favouriteOnly || r.isFavourite === true
-    return stateMatch && favMatch
+    return stateMatch && cityMatch && favMatch
   })
 
   const stats = {
@@ -87,8 +101,11 @@ export default function HomePage() {
           <FilterBar
             states={availableStates}
             selectedState={selectedState}
+            cities={availableCities}
+            selectedCity={selectedCity}
             favouriteOnly={favouriteOnly}
-            onStateChange={setSelectedState}
+            onStateChange={handleStateChange}
+            onCityChange={setSelectedCity}
             onFavouriteToggle={() => setFavouriteOnly(x => !x)}
             total={filtered.length}
           />
