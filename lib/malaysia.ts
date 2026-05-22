@@ -91,6 +91,15 @@ const STATE_CITY_MAP: Record<string, string[]> = {
   'Putrajaya': ['Putrajaya'],
   'Labuan': ['Labuan', 'Victoria'],
   'Perlis': ['Kangar', 'Perlis', 'Arau', 'Padang Besar'],
+  'Taiwan': [
+    'Taipei', 'New Taipei', 'Taoyuan', 'Taichung', 'Tainan', 'Kaohsiung',
+    'Hsinchu', 'Keelung', 'Chiayi', 'Miaoli', 'Changhua', 'Nantou',
+    'Yunlin', 'Pingtung', 'Yilan', 'Hualien', 'Taitung', 'Penghu',
+    'Kinmen', 'Lienchiang', 'Zhongzheng', 'Da\'an', 'Songshan', 'Xinyi',
+    'Zhongshan', 'Wanhua', 'Datong', 'Shilin', 'Beitou', 'Neihu',
+    'Nangang', 'Wenshan', 'Banqiao', 'Xindian', 'Zhonghe', 'Yonghe',
+    'Sanchong', 'Xinzhuang', 'Tucheng', 'Luzhou', 'Shulin',
+  ],
 }
 
 function escapeRegex(s: string): string {
@@ -105,6 +114,9 @@ function wordMatch(text: string, word: string): boolean {
 // Longer / more specific keywords first to prevent partial matches.
 // Includes English aliases (e.g. "Malacca" → "Melaka", "Penang" / "Pulau Pinang").
 const STATES_BY_SPECIFICITY: Array<{ keyword: string; state: string }> = [
+  { keyword: 'Taiwan',          state: 'Taiwan'          },
+  { keyword: '台灣',             state: 'Taiwan'          },
+  { keyword: '台湾',             state: 'Taiwan'          },
   { keyword: 'Negeri Sembilan', state: 'Negeri Sembilan' },
   { keyword: 'Kuala Lumpur',    state: 'Kuala Lumpur'    },
   { keyword: 'Terengganu',      state: 'Terengganu'      },
@@ -177,5 +189,6 @@ export const STATE_COLORS: Record<string, string> = {
   'Putrajaya': 'bg-violet-500',
   'Labuan': 'bg-sky-500',
   'Perlis': 'bg-emerald-500',
+  'Taiwan': 'bg-red-600',
   'Malaysia': 'bg-gray-500',
 }
